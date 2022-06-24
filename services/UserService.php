@@ -6,6 +6,7 @@ use app\models\User;
 use app\dto\UserCreateDto;
 use app\repositories\UserRepository;
 use yii\data\ActiveDataProvider;
+use app\exceptions\UserNotSavedException;
 
 class UserService
 {
@@ -30,8 +31,7 @@ class UserService
             throw new \DomainException('Не удалось сохранить пользователя!');
         }
 
-        $roleUser = Yii::$app->authManager->getRole(User::ROLE_USER);
-        Yii::$app->authManager->assign($roleUser, $user->id);
+        $this->setRole($user, User::ROLE_USER);
     }
 
     public function createFromRequest(): ?User
@@ -43,13 +43,14 @@ class UserService
             $user = $this->fillDefaultFields($user);
 
             if (!$this->userRepository->saveUser($user)) {
-                throw new \DomainException('Не удалось сохранить пользователя!');
+                throw new UserNotSavedException('Не удалось сохранить пользователя!');
             }
+            $this->setRole($user, User::ROLE_USER);
 
             return $user;
         }
 
-        throw new \DomainException('Не удалось сохранить пользователя!');
+        throw new UserNotSavedException('Не удалось сохранить пользователя!');
     }
 
     public function fillDefaultFields(User $user): User
@@ -59,6 +60,12 @@ class UserService
         $user->auth_key = Yii::$app->getSecurity()->generateRandomString(32);
 
         return $user;
+    }
+
+    public function setRole(User $user, string $role): void
+    {
+        $roleUser = Yii::$app->authManager->getRole($role);
+        Yii::$app->authManager->assign($roleUser, $user->id);
     }
 
     public function getAllDataProvider(int $pageSize = 10): ActiveDataProvider

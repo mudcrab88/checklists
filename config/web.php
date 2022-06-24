@@ -30,6 +30,7 @@ $config = [
         ],
         'authManager' => [
             'class' => 'yii\rbac\DbManager',
+            'defaultRoles' => ['user'],
         ],
         'cache' => [
             'class' => 'yii\caching\FileCache',
@@ -77,7 +78,8 @@ $config = [
                         'api/checklist',
                     ],
                     'extraPatterns' => [
-                        'GET view/<id:\d+>' => 'view',
+                        'delete/<id:\d+>' => 'delete',
+                        'GET get-by-user/<user_id:\d+>' => 'get-by-user',
                     ],
                 ],
             ],

@@ -6,10 +6,12 @@ use app\services\UserService;
 use yii\rest\Controller;
 use Yii;
 use OpenApi\Annotations as OA;
+use app\exceptions\UserNotSavedException;
 
 /**
  * @OA\Info(title="User Controller", version="1"),
- * @OA\PathItem(path="/api/user"))
+ * @OA\PathItem(path="/api/user")),
+ * @OA\Tag(name="Пользователи", description = "API для работы с пользователями")
  */
 class UserController extends Controller
 {
@@ -60,6 +62,10 @@ class UserController extends Controller
      *         )
      *     ),
      *     @OA\Response(
+     *         response="405",
+     *         description="Используется неразрешенный метод"
+     *     ),
+     *     @OA\Response(
      *         response="500",
      *         description="Внутренняя ошибка сервера",
      *         @OA\JsonContent(
@@ -78,7 +84,7 @@ class UserController extends Controller
             $this->setStatusCode(201);
 
             return $user;
-        } catch (\DomainException $e) {
+        } catch (UserNotSavedException $e) {
             $this->setStatusCode(400);
             return [ 'message' => $e->getMessage() ];
         } catch (\Throwable $e) {

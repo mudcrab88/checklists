@@ -23,14 +23,16 @@ class m220620_163911_create_user_migration extends Migration
             'access_token' => $this->string()->notNull()->comment( ' Токен' ),
         ], 'CHARACTER SET utf8 COLLATE utf8_general_ci ENGINE=InnoDB');
 
+        $hash = \Yii::$app->getSecurity()->generatePasswordHash('admin');
+
         $this->insert('user', [
             'username' => 'admin',
             'email' => 'admin@admin.local',
-            'password' => \Yii::$app->getSecurity()->generatePasswordHash('admin'),
+            'password' => $hash,
             'auth_key' => \Yii::$app->getSecurity()->generateRandomString(32),
             'checklists_max' => 10,
             'status' => 'active',
-            'access_token' => \Yii::$app->getSecurity()->generateRandomString(32)
+            'access_token' => base64_encode('admin:'.$hash)
         ]);
     }
 

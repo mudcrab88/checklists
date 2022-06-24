@@ -147,4 +147,9 @@ class User extends ActiveRecord implements IdentityInterface
             'access_token'
         ];
     }
+
+    public function getChecklists()
+    {
+        return $this->hasMany(Checklist::class, ['user_id' => 'id']);
+    }
 }
