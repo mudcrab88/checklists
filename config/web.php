@@ -16,11 +16,17 @@ $config = [
             'class' => 'app\modules\admin\Admin',
             'layout' => 'main'
         ],
+        'api' => [
+            'class' => 'app\modules\api\Api',
+        ],
     ],
     'components' => [
         'request' => [
             // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
             'cookieValidationKey' => 'ZHVTIACZxfV8-Ya1sBpkzFr2vOmVpmbr',
+            'parsers' => [
+                'application/json' => 'yii\web\JsonParser',
+            ]
         ],
         'authManager' => [
             'class' => 'yii\rbac\DbManager',
@@ -57,6 +63,23 @@ $config = [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
+                [
+                    'class' => 'yii\rest\UrlRule',
+                    'pluralize'=> false,
+                    'controller' => [
+                        'api/user',
+                    ],
+                ],
+                [
+                    'class' => 'yii\rest\UrlRule',
+                    'pluralize'=> false,
+                    'controller' => [
+                        'api/checklist',
+                    ],
+                    'extraPatterns' => [
+                        'GET view/<id:\d+>' => 'view',
+                    ],
+                ],
             ],
         ],
 

@@ -16,6 +16,11 @@ class UserRepository
         }
     }
 
+    public function findOneByCondition(array $condition): ?User
+    {
+        return User::findOne($condition);
+    }
+
     public function findAllQuery(): ActiveQuery
     {
         return User::find();
@@ -26,7 +31,7 @@ class UserRepository
         return $this->findAllQuery()->all();
     }
 
-    public function findById($id): User
+    public function findById($id): ?User
     {
         return User::findOne($id);
     }

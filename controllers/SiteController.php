@@ -119,7 +119,7 @@ class SiteController extends Controller
 
         if($model->load(\Yii::$app->request->post()) && $model->validate()){
             try {
-                $this->userService->create($model->getCreateDto());
+                $this->userService->createFromDto($model->getCreateDto());
 
                 return $this->goHome();
             } catch (\DomainException $e) {

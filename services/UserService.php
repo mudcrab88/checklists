@@ -16,24 +16,49 @@ class UserService
         $this->userRepository = $userRepository;
     }
 
-    public function create(UserCreateDto $dto): void
+    public function createFromDto(UserCreateDto $dto): void
     {
         $user = new User();
 
         $user->username = $dto->username;
         $user->email = $dto->email;
         $user->password = Yii::$app->security->generatePasswordHash($dto->password);
-        $user->checklists_max = User::CHECKLISTS_MAX;
-        $user->status = User::STATUS_NEW;
-        $user->access_token = Yii::$app->getSecurity()->generateRandomString(32);
-        $user->auth_key = Yii::$app->getSecurity()->generateRandomString(32);
+        $user->access_token = base64_encode($dto->username.':'.$dto->password);
+        $user = $this->fillDefaultFields($user);
 
         if (!$this->userRepository->saveUser($user)) {
-            throw new \DomainException('Не удалось создать пользователя!');
+            throw new \DomainException('Не удалось сохранить пользователя!');
         }
 
         $roleUser = Yii::$app->authManager->getRole(User::ROLE_USER);
         Yii::$app->authManager->assign($roleUser, $user->id);
+    }
+
+    public function createFromRequest(): ?User
+    {
+        $user = new User();
+        if ($user->load(Yii::$app->getRequest()->getBodyParams(), '')) {
+            $user->password = Yii::$app->security->generatePasswordHash($user->password);
+            $user->access_token = base64_encode($user->username.':'.$user->password);
+            $user = $this->fillDefaultFields($user);
+
+            if (!$this->userRepository->saveUser($user)) {
+                throw new \DomainException('Не удалось сохранить пользователя!');
+            }
+
+            return $user;
+        }
+
+        throw new \DomainException('Не удалось сохранить пользователя!');
+    }
+
+    public function fillDefaultFields(User $user): User
+    {
+        $user->checklists_max = User::CHECKLISTS_MAX;
+        $user->status = User::STATUS_NEW;
+        $user->auth_key = Yii::$app->getSecurity()->generateRandomString(32);
+
+        return $user;
     }
 
     public function getAllDataProvider(int $pageSize = 10): ActiveDataProvider
@@ -46,9 +71,14 @@ class UserService
         ]);
     }
 
-    public function findById($id): User
+    public function findById($id): ?User
     {
         return $this->userRepository->findById($id);
+    }
+
+    public function findOneByCondition(array $condition): ?User
+    {
+        return $this->userRepository->findOneByCondition($condition);
     }
 
     public function updateUser(int $id): ?User

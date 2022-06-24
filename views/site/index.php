@@ -10,5 +10,7 @@ $this->title = 'My Yii Application';
         <h1 class="display-4">Чек-листы</h1>
 
         <p class="lead">Сервис управления чек-листами</p>
+
+        <a class="lead" href="/swagger/doc">Документация API</a>
     </div>
 </div>

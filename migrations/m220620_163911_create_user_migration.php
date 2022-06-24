@@ -20,8 +20,8 @@ class m220620_163911_create_user_migration extends Migration
             'auth_key' => $this->string()->notNull()->comment('Ключ аутентификации'),
             'status' => $this->string()->notNull()->defaultValue('new')->comment('Ключ аутентификации'),
             'checklists_max' => $this->integer()->notNull()->defaultValue(10)->comment( 'Количество чек-листов' ),
-            'access_token' => $this->string()->comment( ' Токен' ),
-        ]);
+            'access_token' => $this->string()->notNull()->comment( ' Токен' ),
+        ], 'CHARACTER SET utf8 COLLATE utf8_general_ci ENGINE=InnoDB');
 
         $this->insert('user', [
             'username' => 'admin',

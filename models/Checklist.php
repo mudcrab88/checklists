@@ -3,6 +3,7 @@
 namespace app\models;
 
 use yii\db\ActiveRecord;
+use app\models\User;
 
 /**
  * Class Checklist
@@ -40,6 +41,21 @@ class Checklist extends ActiveRecord
             [['name'], 'string'],
             [['name', 'user_id'], 'required'],
             [['user_id'], 'integer'],
+        ];
+    }
+
+    public function getUser()
+    {
+        return $this->hasOne(User::class, ['id' => 'user_id'])->one();
+    }
+
+    public function fields()
+    {
+        return [
+            'name',
+            'user' => function() {
+                return $this->getUser()->username;
+            }
         ];
     }
 }

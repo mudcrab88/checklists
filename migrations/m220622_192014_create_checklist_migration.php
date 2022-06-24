@@ -16,7 +16,7 @@ class m220622_192014_create_checklist_migration extends Migration
             'id' => $this->primaryKey()->comment( 'Идентификатор' ),
             'name' => $this->string()->notNull()->comment( 'Название' ),
             'user_id' => $this->integer()->comment('Пользователь')
-        ]);
+        ], 'CHARACTER SET utf8 COLLATE utf8_general_ci ENGINE=InnoDB');
 
         $this->addForeignKey('fk-user_id_checklist', 'checklist', 'user_id', 'user', 'id');
 

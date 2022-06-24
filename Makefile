@@ -1,3 +1,5 @@
+init: up migrate rbac-migrate rbac-init
+
 build:
 	@docker-compose build
 
@@ -27,3 +29,4 @@ rbac-migrate:
 
 rbac-init:
 	@docker-compose exec -T app php yii rbac/init
+
