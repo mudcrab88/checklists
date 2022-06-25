@@ -41,7 +41,7 @@ class ChecklistRepository
         }
     }
 
-    public function deleteList($id)
+    public function deleteList($id): int
     {
         return Checklist::deleteAll(['id' => $id]);
     }

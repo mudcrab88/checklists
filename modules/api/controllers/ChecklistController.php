@@ -25,7 +25,7 @@ use Yii;
  *     in="header"
  * )
  */
-class ChecklistController extends Controller
+class ChecklistController extends BaseController
 {
     protected ChecklistService $checklistService;
 
@@ -60,6 +60,7 @@ class ChecklistController extends Controller
                 'delete' => ['post', 'delete'],
                 'get-all' => ['get'],
                 'get-by-user' => ['get'],
+                'get-items' => ['get'],
             ]
         ];
 
@@ -74,7 +75,7 @@ class ChecklistController extends Controller
                 ],
                 [
                     'allow' => true,
-                    'actions' => ['get-by-user', 'create', 'delete'],
+                    'actions' => ['get-by-user', 'create', 'delete', 'get-items'],
                     'roles' => [User::ROLE_USER],
                 ],
             ],
@@ -213,7 +214,7 @@ class ChecklistController extends Controller
      *     ),
      *     @OA\Response(
      *         response="201",
-     *         description="Пользователь успешно создан",
+     *         description="Чек-лист успешно создан",
      *         @OA\JsonContent(
      *             type="object",
      *             required={"name", "user"},
@@ -314,31 +315,18 @@ class ChecklistController extends Controller
     public function actionDelete($id)
     {
         try {
-            if ($this->checklistService->deleteChecklist($id) == true) {
-                $this->setStatusCode(200);
-                return [ 'message' => 'Чек-лист успешно удален' ];
-            } else {
-                $this->setStatusCode(400);
-                return ['message' => 'Не удалось удалить чек-лист'];
-            }
-        } catch (UserNotMatchException $e) {
+            return ($this->checklistService->deleteChecklist($id) == true)
+                   ?
+                   $this->responseWithCode(200, 'Чек-лист успешно удален')
+                   :
+                   $this->responseWithCode(400, 'Не удалось удалить чек-лист');
+        }
+        catch (UserNotMatchException $e) {
             return $this->responseError(403, $e);
         } catch (ChecklistNotFoundException $e) {
             return $this->responseError(404, $e);
         } catch (\Throwable $e) {
-            $this->setStatusCode(500);
-            return [ 'message' => $e->getMessage() ];
+            return $this->responseError(500, $e);
         }
-    }
-
-    private function setStatusCode(int $code): void
-    {
-        Yii::$app->response->statusCode = $code;
-    }
-
-    private function responseError(int $code, \Throwable $e): array
-    {
-        $this->setStatusCode($code);
-        return [ 'message' => $e->getMessage() ];
     }
 }

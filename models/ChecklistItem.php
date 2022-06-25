@@ -45,4 +45,14 @@ class ChecklistItem extends ActiveRecord
             [['checklist_id'], 'integer'],
         ];
     }
+
+    public function fields()
+    {
+        return [
+            'name',
+            'checked' => function() {
+                return $this->checked == true;
+            }
+        ];
+    }
 }

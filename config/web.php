@@ -82,6 +82,17 @@ $config = [
                         'GET get-by-user/<user_id:\d+>' => 'get-by-user',
                     ],
                 ],
+                [
+                    'class' => 'yii\rest\UrlRule',
+                    'pluralize'=> false,
+                    'controller' => [
+                        'api/checklist-item',
+                    ],
+                    'extraPatterns' => [
+                        'delete/<id:\d+>' => 'delete',
+                        'GET get-items/<checklist_id:\d+>' => 'get-items',
+                    ],
+                ],
             ],
         ],
 

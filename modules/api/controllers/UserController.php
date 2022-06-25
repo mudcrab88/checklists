@@ -13,7 +13,7 @@ use app\exceptions\UserNotSavedException;
  * @OA\PathItem(path="/api/user")),
  * @OA\Tag(name="Пользователи", description = "API для работы с пользователями")
  */
-class UserController extends Controller
+class UserController extends BaseController
 {
     protected UserService $userService;
 
@@ -91,10 +91,5 @@ class UserController extends Controller
             $this->setStatusCode(500);
             return [ 'message' => $e->getMessage() ];
         }
-    }
-
-    private function setStatusCode(int $code)
-    {
-        Yii::$app->response->statusCode = $code;
     }
 }
