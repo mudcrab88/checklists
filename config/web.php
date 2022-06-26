@@ -91,6 +91,7 @@ $config = [
                     'extraPatterns' => [
                         'delete/<id:\d+>' => 'delete',
                         'GET get-items/<checklist_id:\d+>' => 'get-items',
+                        'set-checked/<id:\d+>' => 'set-checked',
                     ],
                 ],
             ],

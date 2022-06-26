@@ -58,7 +58,7 @@ class ChecklistService
         }
 
         if ($user->id !== Yii::$app->user->id) {
-            throw new UserNotMatchException('Создатель чек-листа не совпадает с текущим пользователем');
+            throw new UserNotMatchException('Создатель чек-листа не совпадает с текущим пользователем или текущий пользователь блокирован');
         }
 
         if ($this->checklistRepository->deleteList($id) > 0) {
@@ -82,7 +82,7 @@ class ChecklistService
         }
 
         if ($user->id !== Yii::$app->user->id) {
-            throw new UserNotMatchException('Пользователь не совпадает с текущим');
+            throw new UserNotMatchException('Пользователь не совпадает с текущим или текущий пользователь блокирован');
         }
 
         return $this->checklistRepository->findAllByCondition([

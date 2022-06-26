@@ -17,7 +17,6 @@ use yii\filters\VerbFilter;
 use Yii;
 
 /**
- * @OA\Tag(name="Чек-листы", description = "API для работы с чек-листами"),
  * @OA\SecurityScheme(
  *     securityScheme="token",
  *     type="apiKey",
@@ -49,6 +48,7 @@ class ChecklistController extends BaseController
                 return $this->userService->findOneByCondition([
                     'username' => $username,
                     'password' => $password,
+                    'status'   => User::STATUS_ACTIVE
                 ]);
             }
         ];
@@ -300,7 +300,7 @@ class ChecklistController extends BaseController
      *     ),
      *     @OA\Response(
      *         response="404",
-     *         description="Пользователь не найден"
+     *         description="Чек-лист не найден"
      *     ),
      *     @OA\Response(
      *         response="405",

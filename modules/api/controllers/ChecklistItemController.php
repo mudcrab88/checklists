@@ -16,9 +16,6 @@ use OpenApi\Annotations as OA;
 use yii\filters\VerbFilter;
 use Yii;
 
-/**
- * @OA\Tag(name="Пункты чек-листов", description = "API для работы с пунктами чек-листов")
- */
 class ChecklistItemController extends BaseController
 {
     protected ChecklistItemService $itemService;
@@ -44,6 +41,7 @@ class ChecklistItemController extends BaseController
                 return $this->userService->findOneByCondition([
                     'username' => $username,
                     'password' => $password,
+                    'status'   => User::STATUS_ACTIVE
                 ]);
             }
         ];
@@ -54,16 +52,17 @@ class ChecklistItemController extends BaseController
                 'create' => ['post', 'put'],
                 'delete' => ['delete'],
                 'get-items' => ['get'],
+                'set-checked' => ['post']
             ]
         ];
 
         $behaviors['access'] = [
             'class' => AccessControl::class,
-            'only' => ['create', 'get-items'],
+            'only' => ['create', 'delete', 'get-items', 'set-checked'],
             'rules' => [
                 [
                     'allow' => true,
-                    'actions' => ['create', 'get-items'],
+                    'actions' => ['create', 'delete', 'get-items', 'set-checked'],
                     'roles' => [User::ROLE_USER],
                 ],
             ],
@@ -146,6 +145,56 @@ class ChecklistItemController extends BaseController
         }
     }
 
+    /**
+     * @OA\Delete  (
+     *     tags={"Удаление пункта чек-листа"},
+     *     description="Удаление пункта чек-листа",
+     *     security={{"token": {}}},
+     *     path="/api/checklist-item/delete",
+     *     @OA\Parameter(
+     *          name="id",
+     *          in="query",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *     ),
+     *     @OA\Response(
+     *         response="200",
+     *         description="Пункт успешно удален",
+     *       @OA\JsonContent(
+     *             type="object",
+     *             required={"message"},
+     *             @OA\Property(property="message", description="Сообщение", type="string",
+     *                 example="Пункт успешно удален")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response="400",
+     *         description="Не удалось удалить пункт"
+     *     ),
+     *     @OA\Response(
+     *         response="401",
+     *         description="Пользователь не авторизован"
+     *     ),
+     *     @OA\Response(
+     *         response="403",
+     *         description="У пользователя нет прав на это действие "
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Пункт не найден"
+     *     ),
+     *     @OA\Response(
+     *         response="405",
+     *         description="Используется неразрешенный метод"
+     *     ),
+     *     @OA\Response(
+     *         response="500",
+     *         description="Внутренняя ошибка сервера"
+     *     )
+     * )
+     */
     public function actionDelete($id)
     {
         try {
@@ -229,5 +278,74 @@ class ChecklistItemController extends BaseController
             return $this->responseError(500, $e);
         }
         return $items;
+    }
+
+    /**
+     * @OA\Post(
+     *     path="/api/checklist-item/set-checked",
+     *     tags={"Отметка о выполнении/невыполнении"},
+     *     security={{"token": {}}},
+     *     description="Отметка о выполнении/невыполнении",
+    *      @OA\Parameter(
+     *          name="id",
+     *          in="query",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *     ),
+     *     @OA\Response(
+     *         response="200",
+     *         description="Отметка успешно проставлена",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             required={"name", "checked"},
+     *             @OA\Property(property="name", description="Название пункта чек-листа", type="string",
+     *                 example="Первый пункт"),
+     *            @OA\Property(property="checked", description="Выполнен", type="boolean",
+     *                 example="false")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response="400",
+     *         description="Не удалось сохранить пункт"
+     *     ),
+     *     @OA\Response(
+     *         response="401",
+     *         description="Пользователь не авторизован"
+     *     ),
+     *     @OA\Response(
+     *         response="403",
+     *         description="У пользователя нет прав на это действие"
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Чек-лист не найден"
+     *     ),
+     *     @OA\Response(
+     *         response="405",
+     *         description="Используется неразрешенный метод"
+     *     ),
+     *     @OA\Response(
+     *         response="500",
+     *         description="Внутренняя ошибка сервера"
+     *     )
+     * )
+     */
+    public function actionSetChecked($id)
+    {
+        try {
+            $item = $this->itemService->setChecked($id);
+        } catch (ChecklistItemNotSavedException $e) {
+            return $this->responseError(400, $e);
+        } catch (UserNotMatchException $e) {
+            return $this->responseError(403, $e);
+        } catch (ChecklistNotFoundException $e) {
+            return $this->responseError(404, $e);
+        } catch (\Throwable $e) {
+            return $this->responseError(500, $e);
+        }
+
+        return $item;
     }
 }

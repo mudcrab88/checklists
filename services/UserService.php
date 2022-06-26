@@ -50,13 +50,13 @@ class UserService
             return $user;
         }
 
-        throw new UserNotSavedException('Не удалось сохранить пользователя!');
+        throw new UserNotSavedException('Не удалось создать пользователя!');
     }
 
     public function fillDefaultFields(User $user): User
     {
         $user->checklists_max = User::CHECKLISTS_MAX;
-        $user->status = User::STATUS_NEW;
+        $user->status = User::STATUS_ACTIVE;
         $user->auth_key = Yii::$app->getSecurity()->generateRandomString(32);
 
         return $user;

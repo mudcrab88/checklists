@@ -21,12 +21,23 @@ migrate:
 composer-install:
 	@docker-compose exec -T app composer install -d /app --ignore-platform-reqs
 
-test:
-	@docker-compose exec -T app /app/vendor/bin/phpunit --testdox -v /app/tests
-
 rbac-migrate:
 	@docker-compose exec -T app php yii migrate --migrationPath=@yii/rbac/migrations
 
 rbac-init:
 	@docker-compose exec -T app php yii rbac/init
+
+fixtures-load: fixtures-load-user fixtures-load-checklist fixtures-load-item
+
+fixtures-load-user:
+	@docker-compose exec -T app php yii fixture/load User
+
+fixtures-load-checklist:
+	@docker-compose exec -T app php yii fixture/load Checklist
+
+fixtures-load-item:
+	@docker-compose exec -T app php yii fixture/load ChecklistItem
+
+tests-run:
+	php vendor/bin/codecept run api
 

@@ -9,9 +9,8 @@ use OpenApi\Annotations as OA;
 use app\exceptions\UserNotSavedException;
 
 /**
- * @OA\Info(title="User Controller", version="1"),
- * @OA\PathItem(path="/api/user")),
- * @OA\Tag(name="Пользователи", description = "API для работы с пользователями")
+ * @OA\Info(title="API для работы с чек-листами", version="1"),
+ * @OA\PathItem(path="/api/user"))
  */
 class UserController extends BaseController
 {

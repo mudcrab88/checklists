@@ -4,7 +4,7 @@ namespace app\services;
 
 use app\exceptions\ChecklistItemNotSavedException;
 use Yii;
-use app\models\Checklist;
+use app\models\User;
 use app\models\ChecklistItem;
 use app\repositories\ChecklistItemRepository;
 use app\repositories\ChecklistRepository;
@@ -68,6 +68,23 @@ class ChecklistItemService
         return false;
     }
 
+    public function setChecked(int $id): ?ChecklistItem
+    {
+        $item = $this->itemRepository->findById($id);
+        if ($item == null) {
+            throw new ChecklistItemNotFoundException('Пункт не найден');
+        }
+
+        $this->checkUserByListId($item->checklist_id);
+
+        $item->checked = !($item->checked == true);
+        if (!$this->itemRepository->saveItem($item)) {
+            throw new ChecklistItemNotSavedException('Не удалось сохранить пункт!');
+        }
+
+        return $item;
+    }
+
     protected function checkUserByListId(int $checklist_id): void
     {
         $list =  $this->checklistRepository->findById($checklist_id);
@@ -77,7 +94,7 @@ class ChecklistItemService
 
         $user = $list->getUser();
         if ($user->id !== Yii::$app->user->id) {
-            throw new UserNotMatchException('Пользователь-владелец не совпадает с текущим');
+            throw new UserNotMatchException('Пользователь-владелец не совпадает с текущим или текущий пользователь блокирован');
         }
     }
 }
