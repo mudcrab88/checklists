@@ -12,14 +12,6 @@ use yii\helpers\Html;
             ], [
                 'class' => 'btn btn-link'
             ])?>
-
-        </li>
-        <li class="list-group-item">
-            <?= Html::a( 'Управление чек-листами', [
-                '/admin/checklist/index'
-            ], [
-                'class' => 'btn btn-link'
-            ])?>
         </li>
     </ul>
 </div>

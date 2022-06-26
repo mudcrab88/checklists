@@ -47,7 +47,7 @@ class RbacService
         return array_key_exists(User::ROLE_MODERATOR, $roles);
     }
 
-    public function roleIsUser(int $id)
+    public function roleIsUser(int $id): bool
     {
         $roles = Yii::$app->authManager->getRolesByUser($id);
 
@@ -81,5 +81,16 @@ class RbacService
         $roleModerator = Yii::$app->authManager->getRole(User::ROLE_MODERATOR);
         Yii::$app->authManager->revokeAll($id);
         Yii::$app->authManager->assign($roleModerator, $id);
+    }
+
+    public function checkForAdminPanel(): bool
+    {
+        if (!Yii::$app->user->isGuest) {
+            if ($this->roleIsModerator(Yii::$app->user->id) || $this->roleIsAdmin(Yii::$app->user->id)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

@@ -10,6 +10,7 @@ use app\exceptions\UserNotFoundException;
 use app\exceptions\UserNotMatchException;
 use app\exceptions\ChecklistNotSavedException;
 use app\exceptions\ChecklistNotFoundException;
+use yii\data\ActiveDataProvider;
 
 class ChecklistService
 {
@@ -87,6 +88,16 @@ class ChecklistService
 
         return $this->checklistRepository->findAllByCondition([
             'user_id' => $user_id
+        ]);
+    }
+
+    public function getAllByUserIdDataProvider(int $user_id, int $pageSize = 10): ActiveDataProvider
+    {
+        return new ActiveDataProvider([
+            'query' => $this->checklistRepository->findAllByConditionQuery(['user_id' => $user_id]),
+            'pagination' => [
+                'pageSize' => $pageSize,
+            ],
         ]);
     }
 }

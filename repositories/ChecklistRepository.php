@@ -22,9 +22,14 @@ class ChecklistRepository
         return Checklist::findOne($condition);
     }
 
+    public function findAllByConditionQuery(array $condition): ?ActiveQuery
+    {
+        return Checklist::find($condition)->orderBy('id');
+    }
+
     public function findAllByCondition(array $condition): ?array
     {
-        return Checklist::findAll($condition);
+        return $this->findAllByConditionQuery($condition)->all();
     }
 
     public function findById($id): ?Checklist

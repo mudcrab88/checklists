@@ -1,6 +1,7 @@
 <?php
 namespace app\modules\admin\controllers;
 
+use app\services\ChecklistService;
 use yii\web\Controller;
 use app\services\UserService;
 use app\services\RbacService;
@@ -11,12 +12,23 @@ use app\services\RbacService;
 class UserController extends Controller
 {
     protected UserService $userService;
+
     protected RbacService $rbacService;
 
-    public function __construct($id, $module, UserService $userService, RbacService $rbacService, $config = [])
+    protected ChecklistService $listService;
+
+    public function __construct(
+        $id,
+        $module,
+        UserService $userService,
+        RbacService $rbacService,
+        ChecklistService $listService,
+        $config = []
+    )
     {
         $this->userService = $userService;
         $this->rbacService = $rbacService;
+        $this->listService = $listService;
 
         parent::__construct($id, $module, $config);
     }
@@ -26,6 +38,9 @@ class UserController extends Controller
      */
     public function actionIndex(): string
     {
+        if (!$this->rbacService->checkForAdminPanel()) {
+            $this->redirect(['/site/index']);
+        }
         $usersProvider = $this->userService->getAllDataProvider();
 
         return $this->render(
@@ -122,6 +137,33 @@ class UserController extends Controller
         } catch (\Exception $e) {
             return $this->renderError($e);
         }
+    }
+
+    /**
+     * Добавление роли модератора
+     *
+     * @return string
+     */
+    public function actionViewLists(int $id)
+    {
+        try {
+            $permission = $this->rbacService->checkPermissionForView($id);
+        } catch (\DomainException $e) {
+            return $this->renderError($e);
+        }
+
+        if ($permission === true) {
+            $listProvider = $this->listService->getAllByUserIdDataProvider($id);
+
+            return $this->render(
+                'view-lists',
+                [
+                    'listProvider' => $listProvider
+                ]
+            );
+        }
+
+
     }
 
     public function renderError(\Throwable $e)

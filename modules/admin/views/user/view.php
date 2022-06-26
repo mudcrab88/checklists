@@ -2,6 +2,7 @@
 
 use yii\widgets\DetailView;
 use app\models\User;
+use yii\helpers\Html;
 
 /**
  * @var $model User
@@ -9,7 +10,6 @@ use app\models\User;
 
 $this->title = 'Просмотр пользователя';
 ?>
-
 <?= DetailView::widget([
     'model' => $model,
     'attributes' => [
@@ -20,3 +20,11 @@ $this->title = 'Просмотр пользователя';
         'checklists_max'
     ],
 ]) ?>
+
+<div class="buttons">
+    <?=
+    Html::a('Просмотреть чек-листы', ['user/view-lists', 'id' => $model->id], [
+        'class' => 'btn btn-warning',
+    ])
+    ?>
+</div>

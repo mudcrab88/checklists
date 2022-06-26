@@ -11,6 +11,8 @@ $this->title = 'My Yii Application';
 
         <p class="lead">Сервис управления чек-листами</p>
 
-        <a class="lead" href="/swagger/doc">Документация API</a>
+        <p><a class="lead" href="/swagger/doc">Документация API</a></p>
+
+        <p><a class="lead" href="/admin/user/index">Панель управления</a></p>
     </div>
 </div>

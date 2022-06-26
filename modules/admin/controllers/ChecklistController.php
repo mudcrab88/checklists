@@ -14,7 +14,6 @@ class ChecklistController extends Controller
      */
     public function actionIndex()
     {
-        die("aaa");
         return $this->render('index');
     }
 }
