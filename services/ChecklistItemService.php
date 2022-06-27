@@ -11,6 +11,7 @@ use app\repositories\ChecklistRepository;
 use app\exceptions\ChecklistItemNotFoundException;
 use app\exceptions\UserNotMatchException;
 use app\exceptions\ChecklistNotFoundException;
+use yii\data\ActiveDataProvider;
 
 class ChecklistItemService
 {
@@ -96,5 +97,15 @@ class ChecklistItemService
         if ($user->id !== Yii::$app->user->id) {
             throw new UserNotMatchException('Пользователь-владелец не совпадает с текущим или текущий пользователь блокирован');
         }
+    }
+
+    public function getAllByListIdDataProvider(int $list_id, int $pageSize = 10): ActiveDataProvider
+    {
+        return new ActiveDataProvider([
+            'query' => $this->itemRepository->findAllByConditionQuery(['checklist_id' => $list_id]),
+            'pagination' => [
+                'pageSize' => $pageSize,
+            ],
+        ]);
     }
 }

@@ -71,6 +71,8 @@ class UserController extends Controller
                 'model' => $model,
             ]);
         }
+
+        $this->redirect(['/site/index']);
     }
 
     /**
@@ -140,7 +142,7 @@ class UserController extends Controller
     }
 
     /**
-     * Добавление роли модератора
+     * Просмотр чек-листов пользователя
      *
      * @return string
      */
@@ -163,7 +165,7 @@ class UserController extends Controller
             );
         }
 
-
+        $this->redirect(['/site/index']);
     }
 
     public function renderError(\Throwable $e)

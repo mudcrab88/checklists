@@ -24,7 +24,7 @@ class ChecklistRepository
 
     public function findAllByConditionQuery(array $condition): ?ActiveQuery
     {
-        return Checklist::find($condition)->orderBy('id');
+        return Checklist::find()->where($condition)->orderBy('id');
     }
 
     public function findAllByCondition(array $condition): ?array

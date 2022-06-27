@@ -14,11 +14,6 @@ class ChecklistItemRepository
         return ChecklistItem::findOne($id);
     }
 
-    public function findAllByCondition(array $condition): ?array
-    {
-        return ChecklistItem::findAll($condition);
-    }
-
     public function saveItem(ChecklistItem $item): bool
     {
         try {
@@ -31,5 +26,15 @@ class ChecklistItemRepository
     public function deleteItem($id): int
     {
         return ChecklistItem::deleteAll(['id' => $id]);
+    }
+
+    public function findAllByConditionQuery(array $condition): ?ActiveQuery
+    {
+        return ChecklistItem::find()->where($condition)->orderBy('id');
+    }
+
+    public function findAllByCondition(array $condition): ?array
+    {
+        return $this->findAllByConditionQuery($condition)->all();
     }
 }
