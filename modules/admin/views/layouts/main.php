@@ -39,7 +39,8 @@ AppAsset::register($this);
         echo Nav::widget([
             'options' => ['class' => 'navbar-nav'],
             'items' => [
-                 (
+                ['label' => 'Главная страница', 'url' =>  ['/site/index']],
+                (
                     '<li>'
                     . Html::beginForm(['/site/logout'], 'post', ['class' => 'form-inline'])
                     . Html::submitButton(
