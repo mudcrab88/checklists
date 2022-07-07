@@ -7,14 +7,18 @@ use app\dto\UserCreateDto;
 use app\repositories\UserRepository;
 use yii\data\ActiveDataProvider;
 use app\exceptions\UserNotSavedException;
+use app\utils\PasswordHasher;
 
 class UserService
 {
     protected UserRepository $userRepository;
 
-    public function __construct(UserRepository $userRepository)
+    protected PasswordHasher $hasher;
+
+    public function __construct(UserRepository $userRepository, PasswordHasher $hasher)
     {
         $this->userRepository = $userRepository;
+        $this->hasher = $hasher;
     }
 
     public function createFromDto(UserCreateDto $dto): void
@@ -23,7 +27,7 @@ class UserService
 
         $user->username = $dto->username;
         $user->email = $dto->email;
-        $user->password = Yii::$app->security->generatePasswordHash($dto->password);
+        $user->password = $this->hasher->hash($dto->password);
         $user->access_token = base64_encode($dto->username.':'.$dto->password);
         $user = $this->fillDefaultFields($user);
 
@@ -38,7 +42,7 @@ class UserService
     {
         $user = new User();
         if ($user->load(Yii::$app->getRequest()->getBodyParams(), '')) {
-            $user->password = Yii::$app->security->generatePasswordHash($user->password);
+            $user->password = $this->hasher->hash($user->password);
             $user->access_token = base64_encode($user->username.':'.$user->password);
             $user = $this->fillDefaultFields($user);
 
